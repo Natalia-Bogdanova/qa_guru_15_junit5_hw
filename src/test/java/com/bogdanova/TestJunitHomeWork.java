@@ -1,6 +1,8 @@
 package com.bogdanova;
 
+import com.bogdanova.data.Locale;
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
@@ -8,10 +10,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.files.DownloadActions.click;
 
 public class TestJunitHomeWork {
     @ValueSource(strings = {"Платье", "Юбка"}) //test_data
@@ -40,26 +43,21 @@ public class TestJunitHomeWork {
                 .shouldHave(CollectionCondition.texts(searchQuery));
     }
 
-    static Stream<Arguments> wildberriesSiteButtonsTextDataProvider() {
+    static Stream<Arguments> yandexSiteButtonsTextDataProvider() {
         return Stream.of(
-                Arguments.of(List.of("Москва", "Бесплатная доставка", "Продавайте на Wildberries", "Работа в Wildberries"), Locale.Ru),
-                Arguments.of(List.of("Ташкент", "Бесплатная доставка", "Продавайте на Wildberries"), Locale.Uz),
-                Arguments.of(List.of("Минск", "Бесплатная доставка", "Продавайте на Wildberries"), Locale.By)
+                Arguments.of(List.of("Главное", "Подкасты и книги", "Детям", "Потоки"), Locale.RU),
+                Arguments.of(List.of("Home", "Podcasts and books", "For kids", "Stations"), Locale.EN),
+                Arguments.of(List.of("Asosiy", "Podcastlar va kitoblar", "Bolalar uchun", "Oqimlar"), Locale.UZ)
         );
     }
-    @MethodSource("wildberriesSiteButtonsTextDataProvider")
+
+    @MethodSource("yandexSiteButtonsTextDataProvider")
     @ParameterizedTest(name = "Проверка отображения названия кнопок для локали: {1}")
     void selenideSiteButtonsText(List<String> buttonsTexts, Locale locale) {
-        open("https://www.wildberries.ru/");
-        $$("li.simple-menu__item j-b-header-country").find(text(locale.name())).click();
-        $$(".header__top").filter(visible)
+        open("https://music.yandex.ru/");
+        $(".d-select__button deco-button-simple deco-button").click();
+        $("li.deco-popup-menu__item d-select__item").find(text(Locale.name())).click();
+        $$(".nav-kids a").filter(visible)
                 .shouldHave(CollectionCondition.texts(buttonsTexts));
     }
-
-//    @EnumSource(Locale.class)
-//    @ParameterizedTest
-//    void checkLocaleTest(Locale locale) {
-//        open("https://selenide.org/");
-//        $$("#languages a").find(text(locale.name())).shouldBe(visible);
-//    }
 }
