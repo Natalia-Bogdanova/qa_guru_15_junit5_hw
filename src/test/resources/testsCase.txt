@@ -1,0 +1,47 @@
+ @ValueSource(strings = {"Платье", "Юбка"}) //test_data
+     @ParameterizedTest(name = "Проверка количества карточек при поиске по ключевому слову {0}")
+     void wildberriesSearchCommonTest(String testData) {
+         open("https://www.wildberries.ru/");
+         $("#searchInput").click();
+         $("#searchInput").setValue(testData).pressEnter();
+         $$("div.product-card__wrapper").filter(visible)
+                 .shouldHave(CollectionCondition.size(105))
+                 .first()
+                 .shouldHave(text(testData));
+     }
+
+№1
+НАИМЕНОВАНИЕ: Проверка количества карточек при поиске по ключевому слову [test_Data]
+Критичность: минор
+Шаги:
+1. Открыть страницу https://www.wildberries.ru/
+2. Поставить курсор в строку поиска и ввести [test_Data]
+3. Нажать "Enter"
+Ожижаемый результат:
+Количество карточек товаров=105, в первой карточке присутствует слово [test_Data]
+
+
+    @CsvSource({
+            "Платье, По запросу «платье» найдено",
+            "Юбка, По запросу «юбка» найдено"
+    }) //test_data
+    @ParameterizedTest(name = "Проверка ключевого слова в описании результа поиска {0}")
+    void wildberriesSearchCommonTestDifferentExpectedText(String searchQuery, String expectedText) {
+        open("https://www.wildberries.ru/");
+        $("#searchInput").click();
+        $("#searchInput").setValue(searchQuery).pressEnter();
+        $$("div.searching-results__inner").shouldHave(CollectionCondition.texts(expectedText));
+    }
+}
+
+№2
+НАИМЕНОВАНИЕ: Наименование результата поиска [expected_Text] и наличие в нем ключевого слова [search_Query]
+Критичность: мажор
+Шаги:
+1. Открыть страницу https://www.wildberries.ru/
+2. Поставить курсор в строку поиска и ввести [searchQuery]
+3. Нажать "Enter"
+Ожижаемый результат:
+В заголовке результата поиска отображается ключевое слово поиска [searchQuery],
+наименование результата соответствует [expectedText]
+
