@@ -45,3 +45,32 @@
 В заголовке результата поиска отображается ключевое слово поиска [searchQuery],
 наименование результата соответствует [expectedText]
 
+static Stream<Arguments> yandexMusicSiteButtonsText() {
+        return Stream.of(
+                Arguments.of(Locale.UZ, List.of("Mualliflik huquqi egasi", "Foydalanuvchi kelishuvi", "Yordam")),
+                Arguments.of(Locale.RU, List.of("Правообладателям", "Пользовательское соглашение", "Справка")),
+                Arguments.of(Locale.UK, List.of("Правовласникам", "Угода користувача", "Довідка"))
+        );
+    }
+    @MethodSource
+    @ParameterizedTest(name = "Проверка отображения названия кнопок на Yandex.Music для локали {0}")
+    void yandexMusicSiteButtonsText(Locale locale, List<String> buttonsTexts) {
+        open("https://music.yandex.ru");
+        executeJavaScript("$('.pay-promo-close-btn').click()");
+        $(".footer").scrollTo();
+        $(".d-lang-switcher").click();
+        $$(".d-select__item a").find(text(locale.name())).click();
+        $$(".footer__left a").filter(visible).shouldHave(CollectionCondition.texts(buttonsTexts));
+    }
+
+№3
+НАИМЕНОВАНИЕ: Проверка отображения названия кнопок на Yandex.Music для локали {0}
+    Критичность: Критикал
+    Шаги:
+    1. Открыть страницу https://music.yandex.ru
+    2. Закрыть поп-апп с рекламой
+    3. Проскролить до конца страницы
+    4. Изменить locale на [locale_name]
+    5. Проверить изменение [buttonsTexts] относительно выбранного [locale_name]
+    Ожижаемый результат:
+    После смены locale, менятеся язык текста для [buttonsTexts]
